@@ -1,6 +1,7 @@
 namespace SpriteKind {
     export const Timer = SpriteKind.create()
     export const Sword = SpriteKind.create()
+    export const Princess = SpriteKind.create()
 }
 /**
  * 0 - up
@@ -14,6 +15,9 @@ namespace SpriteKind {
 controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
     lastDirection = 0
     walk()
+})
+scene.onOverlapTile(SpriteKind.Player, assets.tile`tile14`, function (sprite, location) {
+    game.showLongText("it's a door, it's locked", DialogLayout.Bottom)
 })
 controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
     music.magicWand.play()
@@ -345,12 +349,25 @@ function createTimer (ms: number) {
     timer.setFlag(SpriteFlag.Ghost, true)
     timer.lifespan = ms
 }
+function princess_324 () {
+    tiles.placeOnRandomTile(Princesss, assets.tile`tile17`)
+}
 function go_to_a_block () {
-    tiles.placeOnRandomTile(hero, assets.tile`transparency16`)
+    for (let value of tiles.getTilesByType(assets.tile`tile18`)) {
+        tiles.placeOnTile(hero, value)
+        tiles.setTileAt(value, sprites.castle.tilePath5)
+    }
+}
+function Fire_ball_here () {
+    tiles.placeOnRandomTile(Fire_ball, assets.tile`tile4`)
 }
 controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
     lastDirection = 1
     walk()
+})
+scene.onOverlapTile(SpriteKind.Player, assets.tile`tile5`, function (sprite, location) {
+    pause(100)
+    Fire_ball.follow(hero)
 })
 function walk () {
     if (lastDirection == 0) {
@@ -666,9 +683,13 @@ sprites.onDestroyed(SpriteKind.Timer, function (sprite) {
 let moving = false
 let timer: Sprite = null
 let lastDirection = 0
+let Princesss: Sprite = null
+let Fire_ball: Sprite = null
 let sword: Sprite = null
 let hero: Sprite = null
-tiles.setTilemap(tilemap`level1`)
+game.showLongText("move with the buttons and a to attack, avoid enemies because you get hurt ", DialogLayout.Bottom)
+info.setLife(4)
+tiles.setTilemap(tilemap`level1x1`)
 hero = sprites.create(img`
     . . . . . . f f f f . . . . . . 
     . . . . f f f 2 2 f f f . . . . 
@@ -687,6 +708,7 @@ hero = sprites.create(img`
     . . . . . f f f f f f . . . . . 
     . . . . . f f . . f f . . . . . 
     `, SpriteKind.Player)
+go_to_a_block()
 controller.moveSprite(hero, 50, 50)
 scene.cameraFollowSprite(hero)
 sword = sprites.create(img`
@@ -707,12 +729,44 @@ sword = sprites.create(img`
     . . . . . . . . . . . . . . . . 
     . . . . . . . . . . . . . . . . 
     `, SpriteKind.Sword)
-game.onUpdate(function () {
-    moving = controller.left.isPressed() || (controller.right.isPressed() || (controller.up.isPressed() || controller.down.isPressed()))
-    if (!(moving)) {
-        animation.stopAnimation(animation.AnimationTypes.All, hero)
-    }
-})
+Fire_ball = sprites.create(img`
+    . 2 2 2 . . . 2 2 2 2 2 2 . 2 2 
+    . 2 2 . . 2 . . . . . . 2 . . 2 
+    2 . . 2 2 4 4 2 2 2 2 . . . 2 . 
+    2 2 2 2 2 2 4 4 4 5 5 5 2 2 2 . 
+    2 2 . . . 4 4 4 4 4 4 4 4 2 2 . 
+    2 2 2 . 4 5 5 2 2 4 2 2 4 2 2 . 
+    5 . . . 5 2 2 2 2 2 4 2 4 2 2 . 
+    . 5 2 4 5 2 2 2 2 2 2 4 4 4 . . 
+    . 5 2 4 2 2 2 2 2 2 2 2 . . . 2 
+    . 5 2 4 2 2 2 2 2 2 2 2 5 . 2 2 
+    . 2 4 4 2 2 2 2 2 2 2 2 . 2 2 2 
+    . 2 4 . . 2 2 2 2 2 2 . 5 2 2 2 
+    . 5 4 . . 5 2 2 2 2 2 . 5 2 2 2 
+    . . . 2 . . . . 2 2 5 5 . 2 2 2 
+    5 . 2 2 2 2 2 . . . . . . . 2 2 
+    2 4 2 2 2 2 2 2 2 2 2 2 2 . 2 2 
+    `, SpriteKind.Player)
+Fire_ball_here()
+Princesss = sprites.create(img`
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . 6 6 6 6 6 6 6 6 6 6 6 . 
+    . . . 6 6 f d d d d d f 6 6 6 . 
+    . . . 6 6 d d d f d d d 6 6 6 6 
+    . . 6 6 . d d d d d d d 6 . . . 
+    . d . . . f f f f f f f . . d . 
+    . d . . . 6 6 6 6 6 6 6 . . d . 
+    . d d d d 6 6 6 6 6 6 6 d d d d 
+    . . . . 6 6 6 6 6 6 6 6 . . . . 
+    . . 6 6 6 6 6 6 6 6 6 6 6 6 6 . 
+    . . 6 6 6 6 6 6 6 6 6 6 6 6 6 . 
+    . . 6 6 6 6 6 6 6 6 6 6 6 6 6 . 
+    . . 6 6 6 6 6 6 6 6 6 6 6 6 6 . 
+    . . 6 . . . . . . . . . . 6 . . 
+    . . a a . . . . . . . . a a . . 
+    `, SpriteKind.Player)
+princess_324()
 game.onUpdate(function () {
     if (lastDirection == 0) {
         sword.bottom = hero.top
@@ -726,5 +780,30 @@ game.onUpdate(function () {
     } else {
         sword.right = hero.left
         sword.y = hero.y
+    }
+})
+game.onUpdate(function () {
+    moving = controller.left.isPressed() || (controller.right.isPressed() || (controller.up.isPressed() || controller.down.isPressed()))
+    if (!(moving)) {
+        animation.stopAnimation(animation.AnimationTypes.All, hero)
+    }
+})
+forever(function () {
+    if (sword.overlapsWith(Fire_ball)) {
+        Fire_ball.destroy(effects.fire, 500)
+    }
+})
+forever(function () {
+    if (hero.overlapsWith(Princesss)) {
+        pause(100)
+        game.showLongText("princess :oh hello, can you help us? we are scared because of fire balls like the one in the front. go into the ggte to defeat the big Fire ball, there is a hole in the wall near me.", DialogLayout.Bottom)
+        Princesss.destroy()
+    }
+})
+forever(function () {
+    if (hero.overlapsWith(Fire_ball)) {
+        Fire_ball.destroy(effects.fire, 500)
+        pause(1000)
+        info.changeLifeBy(-1)
     }
 })
