@@ -3,15 +3,13 @@ namespace SpriteKind {
     export const Sword = SpriteKind.create()
     export const Princess = SpriteKind.create()
 }
-/**
- * 0 - up
- * 
- * 1 - right
- * 
- * 2 - down
- * 
- * 3 - left
- */
+// 0 - up
+// 
+// 1 - right
+// 
+// 2 - down
+// 
+// 3 - left
 controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
     lastDirection = 0
     walk()
@@ -323,52 +321,6 @@ controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
         )
     }
 })
-controller.left.onEvent(ControllerButtonEvent.Pressed, function () {
-    lastDirection = 3
-    walk()
-})
-function createTimer (ms: number) {
-    timer = sprites.create(img`
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        `, SpriteKind.Timer)
-    timer.setFlag(SpriteFlag.Ghost, true)
-    timer.lifespan = ms
-}
-function princess_324 () {
-    tiles.placeOnRandomTile(Princesss, assets.tile`tile17`)
-}
-function go_to_a_block () {
-    for (let value of tiles.getTilesByType(assets.tile`tile18`)) {
-        tiles.placeOnTile(hero, value)
-        tiles.setTileAt(value, sprites.castle.tilePath5)
-    }
-}
-function Fire_ball_here () {
-    tiles.placeOnRandomTile(Fire_ball, assets.tile`tile4`)
-}
-controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
-    lastDirection = 1
-    walk()
-})
-scene.onOverlapTile(SpriteKind.Player, assets.tile`tile5`, function (sprite, location) {
-    pause(100)
-    Fire_ball.follow(hero)
-})
 function walk () {
     if (lastDirection == 0) {
         animation.runImageAnimation(
@@ -672,10 +624,56 @@ function walk () {
         )
     }
 }
+controller.left.onEvent(ControllerButtonEvent.Pressed, function () {
+    lastDirection = 3
+    walk()
+})
+function createTimer (ms: number) {
+    timer = sprites.create(img`
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        `, SpriteKind.Timer)
+    timer.setFlag(SpriteFlag.Ghost, true)
+    timer.lifespan = ms
+}
+controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
+    lastDirection = 1
+    walk()
+})
+scene.onOverlapTile(SpriteKind.Player, assets.tile`tile5`, function (sprite, location) {
+    pause(100)
+    Fire_ball.follow(hero)
+})
+function princess_324 () {
+    tiles.placeOnRandomTile(Princesss, assets.tile`tile17`)
+}
 controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
     lastDirection = 2
     walk()
 })
+function go_to_a_block () {
+    for (let value of tiles.getTilesByType(assets.tile`tile18`)) {
+        tiles.placeOnTile(hero, value)
+        tiles.setTileAt(value, sprites.castle.tilePath5)
+    }
+}
+function Fire_ball_here () {
+    tiles.placeOnRandomTile(Fire_ball, assets.tile`tile4`)
+}
 sprites.onDestroyed(SpriteKind.Timer, function (sprite) {
     animation.stopAnimation(animation.AnimationTypes.All, hero)
     walk()
