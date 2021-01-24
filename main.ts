@@ -14,6 +14,9 @@ controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
     lastDirection = 0
     walk()
 })
+scene.onOverlapTile(SpriteKind.Player, assets.tile`tile21`, function (sprite, location) {
+    Fire_ball_2.follow(hero)
+})
 scene.onOverlapTile(SpriteKind.Player, assets.tile`tile14`, function (sprite, location) {
     game.showLongText("it's a door, it's locked", DialogLayout.Bottom)
 })
@@ -650,16 +653,21 @@ function createTimer (ms: number) {
     timer.setFlag(SpriteFlag.Ghost, true)
     timer.lifespan = ms
 }
+function goooo () {
+    tiles.placeOnRandomTile(Bad_Boy, assets.tile`tile23`)
+}
 controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
     lastDirection = 1
     walk()
 })
 scene.onOverlapTile(SpriteKind.Player, assets.tile`tile5`, function (sprite, location) {
-    pause(100)
     Fire_ball.follow(hero)
 })
 function princess_324 () {
     tiles.placeOnRandomTile(Princesss, assets.tile`tile17`)
+}
+function Fire_ball_here2 () {
+    tiles.placeOnRandomTile(Fire_ball_2, assets.tile`tile22`)
 }
 controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
     lastDirection = 2
@@ -671,6 +679,11 @@ function go_to_a_block () {
         tiles.setTileAt(value, sprites.castle.tilePath5)
     }
 }
+scene.onOverlapTile(SpriteKind.Player, assets.tile`tile20`, function (sprite, location) {
+    tiles.setTilemap(tilemap`level5`)
+    Bad_Boy = sprites.create(assets.image`boss leval one firea dudu`, SpriteKind.Player)
+    goooo()
+})
 function Fire_ball_here () {
     tiles.placeOnRandomTile(Fire_ball, assets.tile`tile4`)
 }
@@ -679,13 +692,15 @@ sprites.onDestroyed(SpriteKind.Timer, function (sprite) {
     walk()
 })
 let moving = false
+let Bad_Boy: Sprite = null
 let timer: Sprite = null
 let lastDirection = 0
+let Fire_ball_2: Sprite = null
 let Princesss: Sprite = null
 let Fire_ball: Sprite = null
 let sword: Sprite = null
 let hero: Sprite = null
-game.showLongText("move with the buttons and a to attack, avoid enemies because you get hurt ", DialogLayout.Bottom)
+game.showLongText("move with the buttons and a to attack, avoid enemies because you get hurt. and press b to ineract. ", DialogLayout.Bottom)
 info.setLife(4)
 tiles.setTilemap(tilemap`level1x1`)
 hero = sprites.create(img`
@@ -765,6 +780,25 @@ Princesss = sprites.create(img`
     . . a a . . . . . . . . a a . . 
     `, SpriteKind.Player)
 princess_324()
+Fire_ball_2 = sprites.create(img`
+    . 2 2 2 . . . 2 2 2 2 2 2 . 2 2 
+    . 2 2 . . 2 . . . . . . 2 . . 2 
+    2 . . 2 2 4 4 2 2 2 2 . . . 2 . 
+    2 2 2 2 2 2 4 4 4 5 5 5 2 2 2 . 
+    2 2 . . . 4 4 4 4 4 4 4 4 2 2 . 
+    2 2 2 . 4 5 5 2 2 4 2 2 4 2 2 . 
+    5 . . . 5 2 2 2 2 2 4 2 4 2 2 . 
+    . 5 2 4 5 2 2 2 2 2 2 4 4 4 . . 
+    . 5 2 4 2 2 2 2 2 2 2 2 . . . 2 
+    . 5 2 4 2 2 2 2 2 2 2 2 5 . 2 2 
+    . 2 4 4 2 2 2 2 2 2 2 2 . 2 2 2 
+    . 2 4 . . 2 2 2 2 2 2 . 5 2 2 2 
+    . 5 4 . . 5 2 2 2 2 2 . 5 2 2 2 
+    . . . 2 . . . . 2 2 5 5 . 2 2 2 
+    5 . 2 2 2 2 2 . . . . . . . 2 2 
+    2 4 2 2 2 2 2 2 2 2 2 2 2 . 2 2 
+    `, SpriteKind.Player)
+Fire_ball_here2()
 game.onUpdate(function () {
     if (lastDirection == 0) {
         sword.bottom = hero.top
@@ -787,15 +821,19 @@ game.onUpdate(function () {
     }
 })
 forever(function () {
+    if (sword.overlapsWith(Fire_ball_2)) {
+        Fire_ball_2.destroy(effects.fire, 500)
+    }
+})
+forever(function () {
     if (sword.overlapsWith(Fire_ball)) {
         Fire_ball.destroy(effects.fire, 500)
     }
 })
 forever(function () {
-    if (hero.overlapsWith(Princesss)) {
+    if (hero.overlapsWith(Princesss) && controller.B.isPressed()) {
         pause(100)
         game.showLongText("princess :oh hello, can you help us? we are scared because of fire balls like the one in the front. go into the ggte to defeat the big Fire ball, there is a hole in the wall near me.", DialogLayout.Bottom)
-        Princesss.destroy()
     }
 })
 forever(function () {
